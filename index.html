@@ -657,6 +657,16 @@
             return numbers;
         }
 
+        function isPrime(num) {
+            if (num <= 1) return false;
+            if (num <= 3) return true;
+            if (num % 2 === 0 || num % 3 === 0) return false;
+            for (let i = 5; i * i <= num; i += 6) {
+                if (num % i === 0 || num % (i + 2) === 0) return false;
+            }
+            return true;
+        }
+
         function calculateResult(a, b, op) {
             switch (op) {
                 case '+': return a + b;
@@ -793,7 +803,13 @@
                                 break;
                             case '*':
                                 const divisors = [];
-                                for (let i = 2; i <= Math.abs(targetResult); i++) { // Start bei 2, nicht bei 1
+                                // Check if we should allow ×1:
+                                // Only if target is prime AND only multiplication is selected (no +, -, or /)
+                                const onlyMultiplicationSelected = selectedOperations.length === 1 && selectedOperations[0] === '*';
+                                const shouldAllowTimesOne = isPrime(targetResult) && onlyMultiplicationSelected;
+                                
+                                const startDivisor = shouldAllowTimesOne ? 1 : 2;
+                                for (let i = startDivisor; i <= Math.abs(targetResult); i++) {
                                     if (targetResult % i === 0) {
                                         divisors.push(i);
                                     }
