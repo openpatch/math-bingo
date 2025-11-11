@@ -192,6 +192,7 @@
             color: #017460;
             box-shadow: 0 4px 15px rgba(1, 116, 96, 0.3);
             border: 3px solid rgba(255, 255, 255, 0.5);
+            margin-top: 20px;
         }
 
         .btn-large:hover {
@@ -202,21 +203,6 @@
 
         .btn-large:active {
             transform: translateY(0px);
-        }
-
-        .btn-reveal {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-            margin-top: 20px;
-            font-size: 1.2em;
-            padding: 18px 35px;
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
-        }
-
-        .btn-reveal:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 5px 18px rgba(245, 87, 108, 0.4);
-            filter: brightness(1.05);
         }
 
         .btn-primary {
@@ -507,16 +493,12 @@
                 </div>
 
                 <div class="section-content">
-                    <button class="btn btn-primary btn-large" onclick="generateProblem()">
-                        🎲 Nächste Aufgabe
-                    </button>
-
                     <div class="problem-display" id="problemDisplay">
                         <div class="problem-text" id="problemText">Klicke auf "Nächste Aufgabe"</div>
                     </div>
 
-                    <button class="btn btn-reveal" onclick="showResult()" style="display:none;" id="showResultBtn">
-                        👁️ Ergebnis anzeigen
+                    <button class="btn btn-primary btn-large" onclick="generateProblem()">
+                        🎲 Nächste Aufgabe
                     </button>
                 </div>
             </div>
@@ -850,7 +832,6 @@
                             problemText.textContent = problem.text;
                             problemText.classList.remove('shuffling');
                             problemText.classList.add('fadeIn');
-                            document.getElementById('showResultBtn').style.display = 'block';
 
                             // Füge die gezogene Aufgabe zur Liste hinzu
                             drawnProblems.push({
@@ -918,25 +899,12 @@
             }
         }
 
-        function showResult() {
-            if (currentProblem) {
-                alert(`Das Ergebnis ist: ${currentProblem.result}\n\nAufgabe: ${currentProblem.fullText}`);
-                document.getElementById('showResultBtn').style.display = 'none';
-
-                // Automatisch nächste Aufgabe generieren
-                setTimeout(() => {
-                    generateProblem();
-                }, 500);
-            }
-        }
-
         function resetGame() {
             if (confirm('Möchten Sie wirklich das Spiel zurücksetzen?')) {
                 usedResults.clear();
                 drawnProblems = [];
                 currentProblem = null;
                 document.getElementById('problemText').textContent = 'Klicke auf "Nächste Aufgabe"';
-                document.getElementById('showResultBtn').style.display = 'none';
                 displayDrawnResults();
                 updateStats();
             }
