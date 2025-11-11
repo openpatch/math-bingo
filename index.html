@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mathe Bingo - Kopfrechnen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .main-problem-section {
+            order: 1;
+        }
+
+        .config-section {
+            order: 2;
+        }
+
+        .results-section {
+            order: 3;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .section.collapsed .section-content {
+            display: none;
+        }
+
+        .section.collapsed {
+            padding: 15px 25px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #667eea;
+            font-size: 1.5em;
+            flex-grow: 1;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #667eea;
+            transition: transform 0.3s ease;
+            padding: 5px 10px;
+        }
+
+        .section.collapsed .toggle-btn {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            margin-top: 20px;
+        }
+
+        .main-problem-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+        }
+
+        .main-problem-section .section-header h2 {
+            color: white;
+            font-size: 2em;
+        }
+
+        .main-problem-section .toggle-btn {
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .operations {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .operation-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.5em;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .operation-btn:hover {
+            background: #f0f0f0;
+        }
+
+        .operation-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .btn-large {
+            font-size: 1.3em;
+            padding: 20px 40px;
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-large:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(102, 126, 234, 0.4);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .btn-large:active {
+            transform: translateY(0px);
+        }
+
+        .btn-reveal {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            margin-top: 20px;
+            font-size: 1.2em;
+            padding: 18px 35px;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+        }
+
+        .btn-reveal:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 18px rgba(245, 87, 108, 0.4);
+            filter: brightness(1.05);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .problem-display {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 60px;
+            border-radius: 15px;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .problem-display.generating {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .problem-text {
+            font-size: 4em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .problem-text.shuffling {
+            animation: shuffle 0.1s ease-in-out;
+        }
+
+        @keyframes shuffle {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            75% {
+                transform: translateX(10px);
+            }
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            opacity: 0;
+        }
+
+        .confetti.active {
+            animation: confettiFall 1s ease-out forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(200px) rotate(720deg);
+            }
+        }
+
+        .sparkle {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #fff, transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkleAnimation 0.6s ease-out forwards;
+        }
+
+        @keyframes sparkleAnimation {
+            0% {
+                opacity: 1;
+                transform: scale(0);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+        }
+
+        .drawn-results {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .drawn-item {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .drawn-item .problem {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .drawn-item .result {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            background: #f0f0ff;
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+
+        .drawn-item .number {
+            background: #667eea;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 50%;
+            font-weight: bold;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .collapsible-sections {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .info-text {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #ffc107;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border: 2px solid #667eea;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .collapsible-sections {
+                grid-template-columns: 1fr;
+            }
+
+            .problem-text {
+                font-size: 2.5em;
+            }
+
+            .operations {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .problem-display {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🎲 Mathe Bingo 🎲</h1>
+            <p>Kopfrechenaufgaben Generator</p>
+        </header>
+
+        <div class="content">
+            <!-- Aktuelle Aufgabe - HAUPTBEREICH -->
+            <div class="section main-problem-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    <h2>🎲 Aktuelle Aufgabe</h2>
+                    <button class="toggle-btn">▼</button>
+                </div>
+
+                <div class="section-content">
+                    <button class="btn btn-primary btn-large" onclick="generateProblem()">
+                        🎲 Nächste Aufgabe
+                    </button>
+
+                    <div class="problem-display" id="problemDisplay">
+                        <div class="problem-text" id="problemText">Klicke auf "Nächste Aufgabe"</div>
+                    </div>
+
+                    <button class="btn btn-reveal" onclick="showResult()" style="display:none;" id="showResultBtn">
+                        👁️ Ergebnis anzeigen
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ausblendbare Bereiche -->
+            <div class="collapsible-sections">
+                <!-- Konfiguration -->
+                <div class="section config-section collapsed">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <h2>⚙️ Konfiguration</h2>
+                        <button class="toggle-btn">▼</button>
+                    </div>
+
+                    <div class="section-content">
+                        <div class="info-text">
+                            <strong>Hinweis:</strong> Geben Sie die gewünschten Ergebnisse ein als Liste (z.B.
+                            1,2,3,4,5) oder als Bereich (z.B. 1-10)
+                        </div>
+
+                        <div class="form-group">
+                            <label for="numbers">Mögliche Ergebnisse:</label>
+                            <input type="text" id="numbers" placeholder="z.B. 1-10 oder 1,2,3,4,5" value="1-10">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rechenoperationen:</label>
+                            <div class="operations">
+                                <button class="operation-btn active" data-op="+">+</button>
+                                <button class="operation-btn active" data-op="-">−</button>
+                                <button class="operation-btn" data-op="*">×</button>
+                                <button class="operation-btn" data-op="/">÷</button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" onclick="generatePossibleResults()">
+                            📊 Mögliche Ergebnisse berechnen
+                        </button>
+
+                        <button class="btn btn-secondary" onclick="resetGame()">
+                            🔄 Spiel zurücksetzen
+                        </button>
+
+                        <div class="stats">
+                            <div class="stat-box">
+                                <div class="stat-number" id="totalResults">0</div>
+                                <div class="stat-label">Gesamt</div>
+                            </div>
+                            <div class="stat-box">
+                                <div class="stat-number" id="remainingResults">0</div>
+                                <div class="stat-label">Übrig</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gezogene Ergebnisse -->
+                <div class="section results-section collapsed">
+                    <div class="section-header" onclick="toggleSection(this)">
+                        <h2>📝 Gezogene Ergebnisse</h2>
+                        <button class="toggle-btn">▼</button>
+                    </div>
+
+                    <div class="section-content">
+                        <div class="drawn-results" id="drawnResults">
+                            <div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #999;">
+                                Noch keine Aufgaben gezogen. Klicken Sie auf "Neue Aufgabe generieren"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleSection(header) {
+            const section = header.parentElement;
+            section.classList.toggle('collapsed');
+        }
+
+        let possibleResults = [];
+        let selectedOperations = ['+', '-'];
+        let usedResults = new Set();
+        let drawnProblems = []; // Array zum Speichern der gezogenen Aufgaben
+        let currentProblem = null;
+        let operandRange = {min: 1, max: 100}; // Operanden können beliebig sein
+
+        // Operation Buttons
+        document.querySelectorAll('.operation-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                this.classList.toggle('active');
+                updateSelectedOperations();
+            });
+        });
+
+        function updateSelectedOperations() {
+            selectedOperations = [];
+            document.querySelectorAll('.operation-btn.active').forEach(btn => {
+                selectedOperations.push(btn.dataset.op);
+            });
+        }
+
+        function parseNumbers(input) {
+            input = input.trim();
+            const numbers = [];
+
+            // Bereich (z.B. 1-10)
+            if (input.includes('-') && !input.includes(',')) {
+                const parts = input.split('-').map(s => s.trim());
+                if (parts.length === 2) {
+                    const start = parseInt(parts[0]);
+                    const end = parseInt(parts[1]);
+                    if (!isNaN(start) && !isNaN(end)) {
+                        for (let i = start; i <= end; i++) {
+                            numbers.push(i);
+                        }
+                    }
+                }
+            }
+            // Liste (z.B. 1,2,3,4,5)
+            else if (input.includes(',')) {
+                const parts = input.split(',');
+                parts.forEach(part => {
+                    const num = parseInt(part.trim());
+                    if (!isNaN(num)) {
+                        numbers.push(num);
+                    }
+                });
+            }
+            // Einzelne Zahl
+            else {
+                const num = parseInt(input);
+                if (!isNaN(num)) {
+                    numbers.push(num);
+                }
+            }
+
+            return numbers;
+        }
+
+        function calculateResult(a, b, op) {
+            switch (op) {
+                case '+': return a + b;
+                case '-': return a - b;
+                case '*': return a * b;
+                case '/': return b !== 0 ? a / b : null;
+                default: return null;
+            }
+        }
+
+        function generatePossibleResults() {
+            const input = document.getElementById('numbers').value;
+            possibleResults = parseNumbers(input);
+
+            if (possibleResults.length === 0) {
+                alert('Bitte geben Sie gültige Ergebnisse ein!');
+                return;
+            }
+
+            if (selectedOperations.length === 0) {
+                alert('Bitte wählen Sie mindestens eine Rechenoperation!');
+                return;
+            }
+
+            usedResults.clear();
+            drawnProblems = []; // Gezogene Aufgaben zurücksetzen
+
+            // Die eingegebenen Zahlen sind bereits die möglichen Ergebnisse
+            displayDrawnResults();
+            updateStats();
+        }
+
+        function displayDrawnResults() {
+            const container = document.getElementById('drawnResults');
+            container.innerHTML = '';
+
+            if (drawnProblems.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 20px; color: #999;">Noch keine Aufgaben gezogen. Klicken Sie auf "Nächste Aufgabe"</div>';
+                return;
+            }
+
+            // Zeige die Aufgaben in umgekehrter Reihenfolge (neueste zuerst)
+            [...drawnProblems].reverse().forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'drawn-item';
+
+                const number = document.createElement('span');
+                number.className = 'number';
+                number.textContent = drawnProblems.length - index;
+
+                const problem = document.createElement('span');
+                problem.className = 'problem';
+                problem.textContent = item.fullText;
+
+                const result = document.createElement('span');
+                result.className = 'result';
+                result.textContent = item.result;
+
+                div.appendChild(number);
+                div.appendChild(problem);
+                div.appendChild(result);
+                container.appendChild(div);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('totalResults').textContent = possibleResults.length;
+            document.getElementById('remainingResults').textContent = possibleResults.length - usedResults.size;
+        }
+
+        function generateProblem() {
+            if (possibleResults.length === 0) {
+                alert('Bitte erst "Mögliche Ergebnisse berechnen" klicken!');
+                return;
+            }
+
+            if (selectedOperations.length === 0) {
+                alert('Bitte wählen Sie mindestens eine Rechenoperation!');
+                return;
+            }
+
+            const availableResults = possibleResults.filter(r => !usedResults.has(r));
+
+            if (availableResults.length === 0) {
+                alert('Alle möglichen Ergebnisse wurden bereits verwendet! Klicken Sie auf "Spiel zurücksetzen".');
+                return;
+            }
+
+            // Animation starten
+            const problemDisplay = document.getElementById('problemDisplay');
+            const problemText = document.getElementById('problemText');
+
+            problemDisplay.classList.add('generating');
+            createSparkles(problemDisplay);
+
+            // Shuffle-Animation mit mehreren zufälligen Zahlen
+            let shuffleCount = 0;
+            const shuffleInterval = setInterval(() => {
+                const randomOp = selectedOperations[Math.floor(Math.random() * selectedOperations.length)];
+                const opSymbol = {'+': '+', '-': '−', '*': '×', '/': '÷'}[randomOp];
+                const randA = Math.floor(Math.random() * 20) + 1;
+                const randB = Math.floor(Math.random() * 20) + 1;
+
+                problemText.textContent = `${randA} ${opSymbol} ${randB} = ?`;
+                problemText.classList.add('shuffling');
+
+                setTimeout(() => {
+                    problemText.classList.remove('shuffling');
+                }, 1000);
+
+                shuffleCount++;
+                if (shuffleCount >= 8) {
+                    clearInterval(shuffleInterval);
+
+                    // Eigentliche Aufgabe generieren
+                    const targetResult = availableResults[Math.floor(Math.random() * availableResults.length)];
+
+                    let problem = null;
+                    let attempts = 0;
+                    const maxAttempts = 10000;
+
+                    while (attempts < maxAttempts) {
+                        const op = selectedOperations[Math.floor(Math.random() * selectedOperations.length)];
+                        let a, b;
+
+                        switch (op) {
+                            case '+':
+                                a = Math.floor(Math.random() * (operandRange.max - operandRange.min + 1)) + operandRange.min;
+                                b = targetResult - a;
+                                break;
+                            case '-':
+                                b = Math.floor(Math.random() * (operandRange.max - operandRange.min + 1)) + operandRange.min;
+                                a = targetResult + b;
+                                break;
+                            case '*':
+                                const divisors = [];
+                                for (let i = 2; i <= Math.abs(targetResult); i++) { // Start bei 2, nicht bei 1
+                                    if (targetResult % i === 0) {
+                                        divisors.push(i);
+                                    }
+                                }
+                                if (divisors.length > 0) {
+                                    a = divisors[Math.floor(Math.random() * divisors.length)];
+                                    b = targetResult / a;
+                                } else {
+                                    attempts++;
+                                    continue;
+                                }
+                                break;
+                            case '/':
+                                b = Math.floor(Math.random() * 9) + 2; // Divisor zwischen 2 und 10, nicht 1
+                                a = targetResult * b;
+                                break;
+                        }
+
+                        if (a >= operandRange.min && a <= operandRange.max &&
+                            b >= operandRange.min && b <= operandRange.max &&
+                            Number.isInteger(a) && Number.isInteger(b)) {
+
+                            const opSymbol = {'+': '+', '-': '−', '*': '×', '/': '÷'}[op];
+                            problem = {
+                                text: `${a} ${opSymbol} ${b} = ?`,
+                                fullText: `${a} ${opSymbol} ${b} = ${targetResult}`,
+                                result: targetResult
+                            };
+                            break;
+                        }
+
+                        attempts++;
+                    }
+
+                    if (problem) {
+                        setTimeout(() => {
+                            currentProblem = problem;
+                            problemText.textContent = problem.text;
+                            problemText.classList.remove('shuffling');
+                            problemText.classList.add('fadeIn');
+                            document.getElementById('showResultBtn').style.display = 'block';
+
+                            // Füge die gezogene Aufgabe zur Liste hinzu
+                            drawnProblems.push({
+                                text: problem.text,
+                                fullText: problem.fullText,
+                                result: problem.result
+                            });
+                            usedResults.add(problem.result);
+
+                            displayDrawnResults();
+                            updateStats();
+
+                            createConfetti(problemDisplay);
+
+                            setTimeout(() => {
+                                problemDisplay.classList.remove('generating');
+                            }, 600);
+                        }, 200);
+                    } else {
+                        alert('Konnte keine Aufgabe für das Ergebnis ' + targetResult + ' generieren. Versuchen Sie es erneut.');
+                        problemDisplay.classList.remove('generating');
+                    }
+                }
+            }, 100);
+        }
+
+        function createConfetti(container) {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#6c5ce7', '#a29bfe'];
+
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = '0';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = (Math.random() * 10 + 5) + 'px';
+                    confetti.style.height = (Math.random() * 10 + 5) + 'px';
+
+                    container.appendChild(confetti);
+
+                    setTimeout(() => confetti.classList.add('active'), 10);
+
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 1000);
+                }, i * 30);
+            }
+        }
+
+        function createSparkles(container) {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'sparkle';
+                    sparkle.style.left = Math.random() * 100 + '%';
+                    sparkle.style.top = Math.random() * 100 + '%';
+
+                    container.appendChild(sparkle);
+
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 600);
+                }, i * 100);
+            }
+        }
+
+        function showResult() {
+            if (currentProblem) {
+                alert(`Das Ergebnis ist: ${currentProblem.result}\n\nAufgabe: ${currentProblem.fullText}`);
+                document.getElementById('showResultBtn').style.display = 'none';
+
+                // Automatisch nächste Aufgabe generieren
+                setTimeout(() => {
+                    generateProblem();
+                }, 500);
+            }
+        }
+
+        function resetGame() {
+            if (confirm('Möchten Sie wirklich das Spiel zurücksetzen?')) {
+                usedResults.clear();
+                drawnProblems = [];
+                currentProblem = null;
+                document.getElementById('problemText').textContent = 'Klicke auf "Nächste Aufgabe"';
+                document.getElementById('showResultBtn').style.display = 'none';
+                displayDrawnResults();
+                updateStats();
+            }
+        }
+
+        // Initial setup
+        updateSelectedOperations();
+    </script>
+</body>
+
+</html>
